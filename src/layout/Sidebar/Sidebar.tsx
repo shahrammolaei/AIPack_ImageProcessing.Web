@@ -1,6 +1,8 @@
 import { useLocation } from 'react-router-dom'
 // import {NavigationManagerr} from '../../core/Navigation/NavigationManager'
-import { NavigationManager } from '../../Core/Navigation/NavigationManager'
+// import { NavigationManager } from '../../Core/Navigation/NavigationManager'
+import { navigationManager } from '../../Core/Navigation/NavigationManager'
+
 
 const navigationItems = [
   {
@@ -43,7 +45,7 @@ export function Sidebar() {
                 ? 'active'
                 : ''
             }`}
-            onClick={() => NavigationManager.navigate(item.path)}
+            onClick={() => navigationManager.navigate(item.path)}
           >
             <span>{index + 1}</span>
             <span>{item.label}</span>
