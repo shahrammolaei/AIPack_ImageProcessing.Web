@@ -1,39 +1,41 @@
+import './app/registerPages'
+
 import { Routes, Route } from 'react-router-dom'
+
 import { AppShell } from './app/AppShell'
 import { NavigationBootstrap } from './app/NavigationBootstrap'
-
-import { DashboardPage } from './pages/Dashboard/DashboardPage'
-import { ImageProcessingPage } from './pages/ImageProcessing/ImageProcessingPage'
-import { ProjectsPage } from './pages/Projects/ProjectsPage'
-import { HistoryPage } from './pages/History/HistoryPage'
-import { SettingsPage } from './pages/Settings/SettingsPage'
+import { pageRegistry } from './Core/Pages/PageRegistry'
 
 export function App() {
+  const pages = pageRegistry.getPages()
+
   return (
     <>
       <NavigationBootstrap />
 
       <Routes>
         <Route path="/" element={<AppShell />}>
-          <Route index element={<DashboardPage />} />
-          <Route
-            path="image-processing"
-            element={<ImageProcessingPage />}
-          />
-          <Route
-            path="projects"
-            element={<ProjectsPage />}
-          />
-          <Route
-            path="history"
-            element={<HistoryPage />}
-          />
-          <Route
-            path="settings"
-            element={<SettingsPage />}
-          />
+          {pages.map((page) => {
+            if (page.path === '/') {
+              return (
+                <Route
+                  key={page.path}
+                  index
+                  element={page.element}
+                />
+              )
+            }
+
+            return (
+              <Route
+                key={page.path}
+                path={page.path.substring(1)}
+                element={page.element}
+              />
+            )
+          })}
         </Route>
       </Routes>
     </>
   )
-} 
+}

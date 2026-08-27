@@ -1,34 +1,11 @@
 import { useLocation } from 'react-router-dom'
-// import {NavigationManagerr} from '../../core/Navigation/NavigationManager'
-// import { NavigationManager } from '../../Core/Navigation/NavigationManager'
+
 import { navigationManager } from '../../Core/Navigation/NavigationManager'
-
-
-const navigationItems = [
-  {
-    label: 'Dashboard',
-    path: '/',
-  },
-  {
-    label: 'Image Processing',
-    path: '/image-processing',
-  },
-  {
-    label: 'Projects',
-    path: '/projects',
-  },
-  {
-    label: 'History',
-    path: '/history',
-  },
-  {
-    label: 'Settings',
-    path: '/settings',
-  },
-]
+import { pageRegistry } from '../../Core/Pages/PageRegistry'
 
 export function Sidebar() {
   const location = useLocation()
+  const pages = pageRegistry.getPages()
 
   return (
     <aside className="sidebar">
@@ -37,18 +14,20 @@ export function Sidebar() {
       </div>
 
       <nav>
-        {navigationItems.map((item, index) => (
+        {pages.map((page, index) => (
           <button
-            key={item.path}
+            key={page.path}
             className={`sidebar-item ${
-              location.pathname === item.path
+              location.pathname === page.path
                 ? 'active'
                 : ''
             }`}
-            onClick={() => navigationManager.navigate(item.path)}
+            onClick={() =>
+              navigationManager.navigate(page.path)
+            }
           >
             <span>{index + 1}</span>
-            <span>{item.label}</span>
+            <span>{page.label}</span>
           </button>
         ))}
       </nav>
