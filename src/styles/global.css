@@ -1,0 +1,169 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: Arial, sans-serif;
+  color: #17202a;
+  background: #eef1f4;
+}
+
+body {
+  margin: 0;
+  min-width: 1024px;
+  min-height: 100vh;
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 64px 1fr 32px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: white;
+  border-bottom: 1px solid #dce1e6;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: bold;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  background: #17202a;
+  color: white;
+  border-radius: 7px;
+  font-size: 12px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.header-actions button {
+  padding: 7px 12px;
+  border: 1px solid #dce1e6;
+  border-radius: 6px;
+  background: white;
+}
+
+.app-body {
+  display: flex;
+  min-height: 0;
+}
+
+.sidebar {
+  width: 240px;
+  padding: 20px 12px;
+  background: #1f2933;
+  color: #dce4ea;
+}
+
+.sidebar-title {
+  padding: 0 12px 12px;
+  color: #9eabb5;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.sidebar nav {
+  display: grid;
+  gap: 4px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.sidebar-item.active {
+  background: #344453;
+  color: white;
+}
+
+.workspace {
+  flex: 1;
+  padding: 28px;
+  overflow: auto;
+}
+
+.workspace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.workspace-header span {
+  font-size: 11px;
+  color: #6b7782;
+  font-weight: bold;
+}
+
+.workspace-header h1 {
+  margin: 4px 0 0;
+  font-size: 26px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.panel {
+  min-height: 150px;
+  padding: 20px;
+  background: white;
+  border: 1px solid #dce1e6;
+  border-radius: 10px;
+}
+
+.panel:first-child {
+  grid-column: 1 / -1;
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+.panel p {
+  color: #66727d;
+  line-height: 1.6;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  background: white;
+  border-top: 1px solid #dce1e6;
+  color: #77838e;
+  font-size: 11px;
+}
