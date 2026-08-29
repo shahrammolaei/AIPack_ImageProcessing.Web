@@ -2,6 +2,7 @@ from fastapi import APIRouter, File, UploadFile
 from fastapi.responses import JSONResponse, Response
 
 from ..application.image_service import ImageService
+from ..infrastructure.opencv_processor import OpenCVImageProcessor
 
 
 router = APIRouter(
@@ -9,7 +10,12 @@ router = APIRouter(
     tags=["Image Processing"],
 )
 
-image_service = ImageService()
+
+processor = OpenCVImageProcessor()
+
+image_service = ImageService(
+    processor=processor,
+)
 
 
 @router.post("/info")

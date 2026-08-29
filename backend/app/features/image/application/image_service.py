@@ -1,10 +1,10 @@
-from ..infrastructure.opencv_processor import OpenCVImageProcessor
+from ..domain.interfaces import ImageProcessor
 
 
 class ImageService:
 
-    def __init__(self):
-        self.processor = OpenCVImageProcessor()
+    def __init__(self, processor: ImageProcessor):
+        self.processor = processor
 
     def get_image_info(
         self,
@@ -28,6 +28,6 @@ class ImageService:
     ) -> bytes:
         image = self.processor.decode(contents)
 
-        gray_image = self.processor.grayscale(image)
+        gray_image = self.processor.process(image)
 
         return self.processor.encode_png(gray_image)

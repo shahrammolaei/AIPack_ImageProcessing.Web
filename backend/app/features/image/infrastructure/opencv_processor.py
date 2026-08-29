@@ -1,8 +1,10 @@
 import cv2
 import numpy as np
 
+from app.features.image.domain.interfaces import ImageProcessor
 
-class OpenCVImageProcessor:
+
+class OpenCVImageProcessor(ImageProcessor):
 
     def decode(self, contents: bytes) -> np.ndarray:
         image_array = np.frombuffer(
@@ -30,6 +32,12 @@ class OpenCVImageProcessor:
         )
 
         return width, height, channels
+
+    def process(self, image: np.ndarray) -> np.ndarray:
+        return cv2.cvtColor(
+            image,
+            cv2.COLOR_BGR2GRAY,
+        )
 
     def grayscale(self, image: np.ndarray) -> np.ndarray:
         return cv2.cvtColor(
