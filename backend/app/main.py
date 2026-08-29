@@ -1,9 +1,27 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.features.image.presentation.image_api import router as image_router
+
 
 app = FastAPI(
     title="AIPack Image Processing API",
     version="1.0.0",
 )
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+app.include_router(image_router)
 
 
 @app.get("/")

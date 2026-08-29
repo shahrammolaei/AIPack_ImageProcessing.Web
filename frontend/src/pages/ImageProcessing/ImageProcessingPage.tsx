@@ -27,13 +27,13 @@ export function ImageProcessingPage() {
 
   const handleFileChange = async (
   event: React.ChangeEvent<HTMLInputElement>
-) => {
+  ) => {
   const file = event.target.files?.[0]
 
   if (!file) {
     return
   }
-
+  
   const imageSource = URL.createObjectURL(file)
 
   const result = await imageProcessingService.loadImage(
@@ -45,7 +45,17 @@ export function ImageProcessingPage() {
     return
   }
 
-  sessionManager.setCurrentImage(result.image)
+  const processedBlob =
+  await imageProcessingService.processImage(file)
+
+const processedSource =
+  URL.createObjectURL(processedBlob)
+
+const processedImage = {
+  ...result.image,
+  source: processedSource,
+}
+  sessionManager.setCurrentImage(processedImage)
 }
 
   const handleClearImage = () => {
