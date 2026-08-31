@@ -39,11 +39,6 @@ class OpenCVImageProcessor(ImageProcessor):
             cv2.COLOR_BGR2GRAY,
         )
 
-    def grayscale(self, image: np.ndarray) -> np.ndarray:
-        return cv2.cvtColor(
-            image,
-            cv2.COLOR_BGR2GRAY,
-        )
 
     def encode_png(self, image: np.ndarray) -> bytes:
         success, encoded_image = cv2.imencode(
