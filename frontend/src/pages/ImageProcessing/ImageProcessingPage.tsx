@@ -25,9 +25,9 @@ import type {
   CapturedMedia,
 } from '../../Features/MediaCapture/Types/CapturedMedia'
 
-import {
-  mediaDispatcher,
-} from '../../Features/MediaCapture/Services/MediaDispatcher'
+// import {
+//   mediaDispatcher,
+// } from '../../Features/MediaCapture/Services/MediaDispatcher'
 
 import { MediaCapture } from '../../Features/MediaCapture/Components/MediaCapture'
 
