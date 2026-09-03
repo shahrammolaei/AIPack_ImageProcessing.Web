@@ -10,7 +10,7 @@
 
 body {
   margin: 0;
-  min-width: 1024px;
+  min-width: 0;
   min-height: 100vh;
 }
 
@@ -66,9 +66,11 @@ button {
 .app-body {
   display: flex;
   min-height: 0;
+  min-width: 0;
 }
 
 .sidebar {
+  flex: 0 0 240px;
   width: 240px;
   padding: 20px 12px;
   background: #1f2933;
@@ -166,4 +168,47 @@ button {
   border-top: 1px solid #dce1e6;
   color: #77838e;
   font-size: 11px;
+}
+
+@media (max-width: 700px) {
+  .app-header {
+    padding: 0 12px;
+  }
+
+  .header-brand {
+    gap: 6px;
+    font-size: 13px;
+  }
+
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+  }
+
+  .header-actions {
+    gap: 4px;
+  }
+
+  .header-actions button {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .app-body {
+    min-width: 0;
+  }
+
+  .workspace {
+    min-width: 0;
+    width: 100%;
+    padding: 14px;
+  }
+
+  .status-bar {
+    padding: 0 8px;
+  }
 }

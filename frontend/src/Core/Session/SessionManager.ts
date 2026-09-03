@@ -1,7 +1,9 @@
 import type { ImageDocument } from '../../Features/ImageProcessing/Models/ImageDocument'
 
 export interface SessionState {
+  originalImage?: ImageDocument
   currentImage?: ImageDocument
+  imageHistory: ImageDocument[]
 }
 
 type SessionListener = (
@@ -9,13 +11,20 @@ type SessionListener = (
 ) => void
 
 export class SessionManager {
-  private state: SessionState = {}
+  private state: SessionState = {
+    imageHistory: [],
+  }
 
   private listeners: Set<SessionListener> =
     new Set()
 
   public getState(): SessionState {
-    return { ...this.state }
+    return {
+      ...this.state,
+      imageHistory: [
+        ...this.state.imageHistory,
+      ],
+    }
   }
 
   public subscribe(
@@ -39,19 +48,64 @@ export class SessionManager {
   public setCurrentImage(
     image: ImageDocument
   ): void {
+    if (this.state.currentImage) {
+      this.state.imageHistory.push(
+        this.state.currentImage
+      )
+    }
+
     this.state.currentImage = image
+
+    if (!this.state.originalImage) {
+      this.state.originalImage = image
+    }
+
+    this.notify()
+  }
+
+  public undo(): void {
+    const previousImage =
+      this.state.imageHistory.pop()
+
+    if (!previousImage) {
+      return
+    }
+
+    this.state.currentImage =
+      previousImage
+
+    this.notify()
+  }
+
+  public reset(): void {
+    if (!this.state.originalImage) {
+      return
+    }
+
+    this.state.currentImage =
+      this.state.originalImage
+
+    this.state.imageHistory = []
+
     this.notify()
   }
 
   public clearCurrentImage(): void {
-    this.state.currentImage = undefined
-    this.notify()
+  this.state = {
+    imageHistory: [],
   }
 
+  this.notify()
+}
+
   public clearSession(): void {
-    this.state = {}
+    this.state = {
+      imageHistory: [],
+    }
+
     this.notify()
   }
 }
 
-export const sessionManager = new SessionManager()
+export const sessionManager =
+  new SessionManager()

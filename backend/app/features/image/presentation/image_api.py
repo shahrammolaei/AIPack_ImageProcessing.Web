@@ -76,3 +76,81 @@ async def process_image(
             status_code=400,
             content={"error": str(exc)},
         )
+
+@router.post("/blur")
+async def blur_image(
+    file: UploadFile = File(...),
+    strength: str = "medium",
+    image_service: ImageService = Depends(get_image_service),
+):
+    contents = await file.read()
+
+    try:
+        processed_image = image_service.blur(
+            contents=contents,
+            strength=strength,
+        )
+
+        return Response(
+            content=processed_image,
+            media_type="image/png",
+        )
+
+    except ValueError as exc:
+        return JSONResponse(
+            status_code=400,
+            content={"error": str(exc)},
+        )
+
+
+@router.post("/enhance")
+async def enhance_image(
+    file: UploadFile = File(...),
+    strength: str = "medium",
+    image_service: ImageService = Depends(
+        get_image_service
+    ),
+):
+    contents = await file.read()
+    print(strength)
+    try:
+        processed_image = image_service.enhance_image(
+            contents=contents,
+            strength=strength,
+        )
+
+        return Response(
+            content=processed_image,
+            media_type="image/png",
+        )
+
+    except ValueError as exc:
+        return JSONResponse(
+            status_code=400,
+            content={"error": str(exc)},
+        )
+
+@router.post("/edges")
+async def detect_edges(
+    file: UploadFile = File(...),
+    image_service: ImageService = Depends(
+        get_image_service
+    ),
+):
+    contents = await file.read()
+
+    try:
+        processed_image = image_service.detect_edges(
+            contents=contents,
+        )
+
+        return Response(
+            content=processed_image,
+            media_type="image/png",
+        )
+
+    except ValueError as exc:
+        return JSONResponse(
+            status_code=400,
+            content={"error": str(exc)},
+        )

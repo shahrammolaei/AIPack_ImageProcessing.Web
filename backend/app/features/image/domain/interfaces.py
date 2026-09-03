@@ -24,6 +24,21 @@ class ImageProcessor(ABC):
         pass
 
     @abstractmethod
+    def blur(
+            self,
+            image: np.ndarray,
+            strength: str,
+    ) -> np.ndarray:
+        pass
+
+    @abstractmethod
+    def detect_edges(
+            self,
+            image: np.ndarray,
+    ) -> np.ndarray:
+        pass
+
+    @abstractmethod
     def encode_png(
         self,
         image: np.ndarray,

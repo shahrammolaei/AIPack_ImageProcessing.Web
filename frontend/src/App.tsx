@@ -1,9 +1,9 @@
-import './app/registerPages'
+import './App/registerPages'
 
 import { Routes, Route } from 'react-router-dom'
 
-import { AppShell } from './app/AppShell'
-import { NavigationBootstrap } from './app/NavigationBootstrap'
+import { AppShell } from './App/AppShell'
+import { NavigationBootstrap } from './App/NavigationBootstrap'
 import { pageRegistry } from './Core/Pages/PageRegistry'
 
 export function App() {
