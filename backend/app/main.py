@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.features.image.presentation.image_api import router as image_router
+from app.features.video.presentation.video_api import router as video_router
 
 
 app = FastAPI(
@@ -22,6 +23,7 @@ app.add_middleware(
 
 
 app.include_router(image_router)
+app.include_router(video_router)
 
 
 @app.get("/")

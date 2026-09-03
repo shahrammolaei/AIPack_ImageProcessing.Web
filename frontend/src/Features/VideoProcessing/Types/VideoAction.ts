@@ -1,0 +1,2 @@
+export type VideoAction =
+  | 'grayscale'

@@ -1,15 +1,35 @@
 import { useEffect, useRef, useState } from 'react'
 import { ImageWorkspace } from '../../Features/ImageProcessing/Components/ImageWorkspace'
-import type { ImageAction } from '../../Features/ImageProcessing/Components/ActionPanel'
+import type {
+  ImageAction,
+  VideoAction,
+} from '../../Features/ImageProcessing/Components/ActionPanel'
 
 import {
   imageProcessingService,
 } from '../../Features/ImageProcessing/Services/ImageProcessingService'
+import {
+  videoProcessingService
+} from '../../Features/VideoProcessing/Services/VideoProcessingService'
+
+import type {
+  VideoDocument
+} from '../../Features/VideoProcessing/Models/VideoDocument'
 
 import {
   sessionManager,
   type SessionState,
 } from '../../Core/Session/SessionManager'
+
+import type {
+  CapturedMedia,
+} from '../../Features/MediaCapture/Types/CapturedMedia'
+
+import {
+  mediaDispatcher,
+} from '../../Features/MediaCapture/Services/MediaDispatcher'
+
+import { MediaCapture } from '../../Features/MediaCapture/Components/MediaCapture'
 
 export function ImageProcessingPage() {
   const [sessionState, setSessionState] =
@@ -22,6 +42,12 @@ export function ImageProcessingPage() {
 
   const [selectedFile, setSelectedFile] =
     useState<File | null>(null)
+
+  const [currentVideo, setCurrentVideo] =
+    useState<VideoDocument | null>(null)
+
+  const [isCaptureOpen, setIsCaptureOpen] =
+    useState(false)
 
   useEffect(() => {
     const unsubscribe =
@@ -47,43 +73,122 @@ export function ImageProcessingPage() {
 
     setSelectedFile(file)
 
-    const imageSource =
-      URL.createObjectURL(file)
+    if (file.type.startsWith('video/')) {
+      try {
+        const video =
+          await videoProcessingService.loadVideo(file)
 
-    const result =
-      await imageProcessingService.loadImage(
-        imageSource,
-        file.name
+        setCurrentVideo(video)
+
+        sessionManager.clearCurrentImage()
+
+        console.log('Video loaded:', video)
+
+        return
+      } catch (error) {
+        console.error(
+          'Failed to load video:',
+          error
+        )
+
+        return
+      }
+    }
+
+    if (file.type.startsWith('image/')) {
+      setCurrentVideo(null)
+
+      const imageSource =
+        URL.createObjectURL(file)
+
+      const result =
+        await imageProcessingService.loadImage(
+          imageSource,
+          file.name
+        )
+
+      if (!result.success || !result.image) {
+        return
+      }
+
+      sessionManager.setCurrentImage(
+        result.image
+      )
+    }
+  }
+
+  const handleCapturedMedia = async (
+    media: CapturedMedia
+  ) => {
+
+    console.log(
+      'Captured media received:',
+      media
+    )
+
+    setIsCaptureOpen(false)
+
+    if (media.type === 'image') {
+
+      const result =
+        await imageProcessingService.loadImage(
+          media.source,
+          media.name
+        )
+
+      if (!result.success || !result.image) {
+        return
+      }
+
+      setSelectedFile(media.file)
+
+      sessionManager.setCurrentImage(
+        result.image
       )
 
-    if (!result.success || !result.image) {
       return
     }
 
-    // const processedBlob =
-    //   await imageProcessingService.processImage(
-    //     file
-    //   )
+    if (media.type === 'video') {
 
-    // const processedSource =
-    //   URL.createObjectURL(processedBlob)
+      try {
 
-    // const processedImage = {
-    //   ...result.image,
-    //   source: processedSource,
-    // }
+        setSelectedFile(media.file)
 
-    // sessionManager.setCurrentImage(
-    //   processedImage
-    // )
+        const video =
+          await videoProcessingService.loadVideo(
+            media.file
+          )
 
-    sessionManager.setCurrentImage(
-      result.image
-    )
+        setCurrentVideo(video)
+
+        sessionManager.clearCurrentImage()
+
+        return
+
+      } catch (error) {
+
+        console.error(
+          'Failed to load captured video:',
+          error
+        )
+
+        return
+      }
+    }
+
+    if (media.type === 'audio') {
+
+      console.log(
+        'Captured audio:',
+        media
+      )
+
+      return
+    }
   }
-
   const handleApply = async (
-    action: ImageAction,
+    action: ImageAction | VideoAction,
     strength?: string
   ) => {
     console.log('HANDLE APPLY:', {
@@ -92,6 +197,40 @@ export function ImageProcessingPage() {
       selectedFile,
       currentImage,
     })
+
+    if (action === 'grayscale' && currentVideo) {
+      try {
+        const processedBlob =
+          await videoProcessingService.processVideo(
+            selectedFile!
+          )
+
+        const processedSource =
+          URL.createObjectURL(processedBlob)
+
+        const processedVideo = {
+          ...currentVideo,
+          source: processedSource,
+        }
+
+        setCurrentVideo(processedVideo)
+
+        console.log(
+          'Video grayscale applied:',
+          processedVideo
+        )
+
+        return
+      } catch (error) {
+        console.error(
+          'Failed to process video:',
+          error
+        )
+
+        return
+      }
+    }
+
     if (!selectedFile || !currentImage) {
       return
     }
@@ -233,10 +372,44 @@ export function ImageProcessingPage() {
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept="image/*,video/*"
         onChange={handleFileChange}
         hidden
       />
+
+      {isCaptureOpen && (
+        <div
+          className="media-capture-overlay"
+          onClick={() => {
+            setIsCaptureOpen(false)
+          }}
+        >
+          <div
+            className="media-capture-modal"
+            onClick={(event) => {
+              event.stopPropagation()
+            }}
+          >
+            <button
+              type="button"
+              className="media-capture-modal-close"
+              onClick={() => {
+                setIsCaptureOpen(false)
+              }}
+              aria-label="Close"
+            >
+              ×
+            </button>
+
+            <MediaCapture
+              onCapture={handleCapturedMedia}
+              onClose={() => {
+                setIsCaptureOpen(false)
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       <ImageWorkspace
         imageSource={
@@ -248,7 +421,20 @@ export function ImageProcessingPage() {
         imageName={currentImage?.name}
         width={currentImage?.width}
         height={currentImage?.height}
+
+
+        videoSource={currentVideo?.source ?? null}
+        // videoName={currentVideo?.name}
+        videoWidth={currentVideo?.width}
+        videoHeight={currentVideo?.height}
+        videoFps={currentVideo?.fps}
+        videoDuration={currentVideo?.duration}
+        videoFrameCount={currentVideo?.frameCount}
+
         onUpload={handleUploadClick}
+        onCapture={() => {
+          setIsCaptureOpen(true)
+        }}
         onClear={handleClearImage}
         onApply={handleApply}
         onUndo={handleUndo}

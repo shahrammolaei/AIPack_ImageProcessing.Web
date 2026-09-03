@@ -1,7 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { WorkspaceToolbar } from './WorkspaceToolbar'
-import { ActionPanel, type ImageAction } from './ActionPanel'
+import {
+    ActionPanel,
+    type ImageAction,
+    type VideoAction,
+    type MediaAction,
+} from './ActionPanel'
 import { ImageCanvas } from './ImageCanvas'
 import { ActionDetailsPanel } from './ActionDetailsPanel'
 
@@ -13,10 +18,21 @@ interface ImageWorkspaceProps {
     imageName?: string
     width?: number
     height?: number
+    // video Features
+    videoSource?: string | null
+    // videoName?: string
+    videoWidth?: number
+    videoHeight?: number
+    videoFps?: number
+    videoDuration?: number
+    videoFrameCount?: number
+    //----------------
+
     onUpload: () => void
+    onCapture: () => void
     onClear: () => void
     onApply: (
-        action: ImageAction,
+        action: ImageAction | VideoAction,
         strength?: string
     ) => void
     onUndo: () => void
@@ -30,7 +46,18 @@ export function ImageWorkspace({
     imageName,
     width,
     height,
+    // video Features
+    videoSource,
+    // videoName,
+    videoWidth,
+    videoHeight,
+    videoFps,
+    videoDuration,
+    videoFrameCount,
+    //----------------
+
     onUpload,
+    onCapture,
     onClear,
     onApply,
     onUndo,
@@ -39,10 +66,14 @@ export function ImageWorkspace({
 }: ImageWorkspaceProps) {
 
     const [activeAction, setActiveAction] =
-        useState<ImageAction | null>(null)
+        useState<MediaAction | null>(null)
 
     const [isPreviewOpen, setIsPreviewOpen] =
         useState(false)
+
+    useEffect(() => {
+        setActiveAction(null)
+    }, [imageSource, videoSource])
 
     return (
         <div className="workspace-shell">
@@ -51,8 +82,10 @@ export function ImageWorkspace({
 
                 <ActionPanel
                     onUpload={onUpload}
+                    onCapture={onCapture}
                     onClear={onClear}
                     hasImage={Boolean(imageSource)}
+                    hasVideo={Boolean(videoSource)}
                     activeAction={activeAction}
                     onActionSelect={(action) => {
                         setActiveAction(action)
@@ -64,6 +97,10 @@ export function ImageWorkspace({
                     imageName={imageName}
                     width={width}
                     height={height}
+                    videoSource={videoSource}
+                    // videoName={videoName}
+                    videoWidth={videoWidth}
+                    videoHeight={videoHeight}
                 />
 
                 <ActionDetailsPanel
@@ -71,6 +108,12 @@ export function ImageWorkspace({
                     imageName={imageName}
                     width={width}
                     height={height}
+                    // videoName={videoName}
+                    videoWidth={videoWidth}
+                    videoHeight={videoHeight}
+                    videoFps={videoFps}
+                    videoDuration={videoDuration}
+                    videoFrameCount={videoFrameCount}
                     onApply={onApply}
                 />
 
@@ -106,7 +149,7 @@ export function ImageWorkspace({
                                     setIsPreviewOpen(false)
                                 }
                             >
-                                ×
+
                             </button>
                         </div>
 

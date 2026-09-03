@@ -1,24 +1,41 @@
 import { useState } from 'react'
-import type { ImageAction } from './ActionPanel'
+import type {
+    ImageAction,
+    VideoAction,
+    MediaAction,
+} from './ActionPanel'
 
 interface ActionDetailsPanelProps {
-    activeAction: ImageAction | null
+    activeAction: MediaAction | null
+
     imageName?: string
     width?: number
     height?: number
+
+    videoName?: string
+    videoWidth?: number
+    videoHeight?: number
+    videoFps?: number
+    videoDuration?: number
+    videoFrameCount?: number
+
     onApply: (
-        action: ImageAction,
+        action: ImageAction | VideoAction,
         strength?: string
     ) => void
 }
 
-const actionTitles: Record<ImageAction, string> = {
+const actionTitles: Record<
+    MediaAction,
+    string
+> = {
     improve: 'Improve Image',
     edit: 'Edit Image',
     blur: 'Blur Image',
     edges: 'Edge Detection',
     remove: 'Remove Background',
     analyze: 'Analyze Image',
+    grayscale: 'Grayscale Video',
 }
 
 export function ActionDetailsPanel({
@@ -26,36 +43,87 @@ export function ActionDetailsPanel({
     imageName,
     width,
     height,
+
+    videoName,
+    videoWidth,
+    videoHeight,
+    videoFps,
+    videoDuration,
+    videoFrameCount,
+
     onApply,
 }: ActionDetailsPanelProps) {
     const [strength, setStrength] =
         useState('medium')
+
+    const hasVideo = Boolean(videoName)
+
     if (!activeAction) {
         return (
             <aside className="workspace-details">
+
                 <div className="details-header">
                     <span>Details</span>
                 </div>
 
                 <div className="details-content">
+
                     <div className="detail-item">
                         <span>Name</span>
-                        <strong>{imageName}</strong>
+
+                        <strong>
+                            {hasVideo
+                                ? videoName
+                                : imageName}
+                        </strong>
                     </div>
 
                     <div className="detail-item">
                         <span>Size</span>
+
                         <strong>
-                            {width} × {height} px
+                            {hasVideo
+                                ? `${videoWidth} × ${videoHeight} px`
+                                : `${width} × ${height} px`}
                         </strong>
                     </div>
 
+                    {hasVideo && (
+                        <>
+                            <div className="detail-item">
+                                <span>FPS</span>
+
+                                <strong>
+                                    {videoFps}
+                                </strong>
+                            </div>
+
+                            <div className="detail-item">
+                                <span>Duration</span>
+
+                                <strong>
+                                    {videoDuration?.toFixed(2)} s
+                                </strong>
+                            </div>
+
+                            <div className="detail-item">
+                                <span>Frames</span>
+
+                                <strong>
+                                    {videoFrameCount}
+                                </strong>
+                            </div>
+                        </>
+                    )}
+
                     <div className="detail-item">
                         <span>Status</span>
+
                         <strong className="status-ready">
                             Ready
                         </strong>
                     </div>
+
                 </div>
             </aside>
         )
@@ -63,11 +131,36 @@ export function ActionDetailsPanel({
 
     return (
         <aside className="workspace-details">
+
             <div className="details-header">
-                <span>{actionTitles[activeAction]}</span>
+                <span>
+                    {actionTitles[activeAction]}
+                </span>
             </div>
 
             <div className="action-details-content">
+
+                {activeAction === 'grayscale' && (
+                    <>
+                        <p className="action-description">
+                            Convert the video to grayscale.
+                        </p>
+
+                        <button
+                            type="button"
+                            className="apply-action-button"
+                            onClick={() => {
+                                console.log(
+                                    'VIDEO GRAYSCALE BUTTON CLICKED'
+                                )
+
+                                onApply('grayscale')
+                            }}
+                        >
+                            Apply Grayscale
+                        </button>
+                    </>
+                )}
 
                 {activeAction === 'improve' && (
                     <>
@@ -79,19 +172,36 @@ export function ActionDetailsPanel({
                             Enhancement
                         </label>
 
-                        <select value={strength} onChange={(event) => setStrength(event.target.value)}>
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
+                        <select
+                            value={strength}
+                            onChange={(event) =>
+                                setStrength(
+                                    event.target.value
+                                )
+                            }
+                        >
+                            <option value="low">
+                                Low
+                            </option>
+
+                            <option value="medium">
+                                Medium
+                            </option>
+
+                            <option value="high">
+                                High
+                            </option>
                         </select>
 
                         <button
                             type="button"
                             className="apply-action-button"
-                            onClick={() => {
-                                console.log('APPLY BUTTON CLICKED')
-                                onApply('improve', strength)
-                            }}
+                            onClick={() =>
+                                onApply(
+                                    'improve',
+                                    strength
+                                )
+                            }
                         >
                             Apply
                         </button>
@@ -111,21 +221,33 @@ export function ActionDetailsPanel({
                         <select
                             value={strength}
                             onChange={(event) =>
-                                setStrength(event.target.value)
+                                setStrength(
+                                    event.target.value
+                                )
                             }
                         >
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
+                            <option value="low">
+                                Low
+                            </option>
+
+                            <option value="medium">
+                                Medium
+                            </option>
+
+                            <option value="high">
+                                High
+                            </option>
                         </select>
 
                         <button
                             type="button"
                             className="apply-action-button"
-                            onClick={() => {
-                                console.log('BLUR BUTTON CLICKED')
-                                onApply('blur', strength)
-                            }}
+                            onClick={() =>
+                                onApply(
+                                    'blur',
+                                    strength
+                                )
+                            }
                         >
                             Apply Blur
                         </button>
@@ -141,10 +263,9 @@ export function ActionDetailsPanel({
                         <button
                             type="button"
                             className="apply-action-button"
-                            onClick={() => {
-                                console.log('EDGE DETECTION BUTTON CLICKED')
+                            onClick={() =>
                                 onApply('edges')
-                            }}
+                            }
                         >
                             Detect Edges
                         </button>
@@ -160,10 +281,9 @@ export function ActionDetailsPanel({
                         <button
                             type="button"
                             className="apply-action-button"
-                            onClick={() => {
-                                console.log('GRAYSCALE BUTTON CLICKED')
+                            onClick={() =>
                                 onApply('edit')
-                            }}
+                            }
                         >
                             Grayscale
                         </button>
@@ -194,7 +314,6 @@ export function ActionDetailsPanel({
                         <button
                             type="button"
                             className="apply-action-button"
-
                         >
                             Apply
                         </button>
