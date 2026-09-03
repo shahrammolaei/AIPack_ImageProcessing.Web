@@ -7,13 +7,13 @@ import { HistoryPage } from '../pages/History/HistoryPage'
 import { SettingsPage } from '../pages/Settings/SettingsPage'
 
 PageRegistrar.register({
-  path: '/',
+  path: '/image-processing',
   label: 'Dashboard',
   element: <DashboardPage />,
 })
 
 PageRegistrar.register({
-  path: '/image-processing',
+  path: '/',
   label: 'Image Processing',
   element: <ImageProcessingPage />,
 })
